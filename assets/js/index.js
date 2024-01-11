@@ -1,40 +1,47 @@
-const formTask = document.getElementById("form-text");
-const inputTask = document.getElementById("input-some-text");
-formTask.addEventListener('submit', function (e) {
+document.addEventListener('click', function (e) {
     e.preventDefault();
-    const task = inputTask.value;
-    addTask(task);
+
+    const target = e.target;
+
+    if (target.classList.contains('remove-text')) {
+        target.parentNode.remove();
+    }
+
+    if ((e.target.nodeName) === 'BUTTON') {
+        const form = e.target.form;
+        const input = form[0];
+        if (isValid(input.value)) {
+            createElement('item', form);
+            input.value = '';
+        } else {
+            createElement('error', form)
+        }
+    }
 });
 
-function addTask(task) {
-    if (task === '') {
-        modalWindow();
-    } else {
+function isValid(value) {
+    return value.trim().length > 0;
+}
+
+function createElement(el, form) {
+    if (el === 'item') {
         const wrapper = document.createElement('div');
         wrapper.className = 'text-wrapper';
 
         const item = document.createElement('p');
         item.className = 'some-text';
-        item.innerHTML = task;
+        item.innerHTML = `${form[0].value}`;
+        wrapper.appendChild(item);
 
         const removeItem = document.createElement('i');
         removeItem.className = 'remove-text';
-        removeItem.innerHTML = "&times";
-        removeItem.addEventListener('click', function () {
-            formTask.removeChild(wrapper);
-        });
-
-        wrapper.appendChild(item);
+        removeItem.innerHTML = "&times;";
         wrapper.appendChild(removeItem);
 
-        formTask.appendChild(wrapper);
+        form.appendChild(wrapper);
     }
-}
 
-function modalWindow() {
-    const customModal = document.getElementById('modal');
-    customModal.style.display = 'block';
-
-    document.querySelector('.close').addEventListener('click', () => customModal.style.display = 'none');
-    window.addEventListener('click', (event) => event.target === customModal ? customModal.style.display = 'none' : null);
+    if (el === 'error') {
+        alert('Fill input');
+    }
 }
